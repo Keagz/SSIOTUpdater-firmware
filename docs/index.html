@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SS IOT Firmware Admin</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============ LOGIN GATE (cosmetic) ============ -->
+  <section id="login" class="login-wrap">
+    <form id="loginForm" class="card login-card" autocomplete="off">
+      <h1>SS IOT Firmware Admin</h1>
+      <p class="muted">Sign in to manage firmware.</p>
+      <label>Username <input type="text" id="loginUser" autocomplete="off" /></label>
+      <label>Password <input type="password" id="loginPass" autocomplete="off" /></label>
+      <button type="submit" class="primary">Sign in</button>
+      <p id="loginError" class="error hidden">Incorrect username or password.</p>
+    </form>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <main id="app" class="hidden">
+    <header class="topbar">
+      <div class="brand">SS IOT Firmware Admin</div>
+      <nav class="tabs">
+        <button class="tab active" data-tab="upload">Upload</button>
+        <button class="tab" data-tab="manage">Manage &amp; Revert</button>
+        <button class="tab" data-tab="settings">Settings</button>
+      </nav>
+      <button id="logoutBtn" class="ghost">Sign out</button>
+    </header>
+
+    <div id="repoBanner" class="banner"></div>
+
+    <!-- ---- UPLOAD ---- -->
+    <section id="tab-upload" class="tabpane">
+      <div class="card">
+        <h2>Upload new firmware</h2>
+        <div class="grid2">
+          <label>Device Type
+            <select id="upDevice"></select>
+          </label>
+          <label>Battery Type
+            <select id="upBattery"></select>
+          </label>
+          <label>Version
+            <input type="text" id="upVersion" placeholder="e.g. 6.0.0" />
+          </label>
+          <label>Firmware file (.bin)
+            <input type="file" id="upFile" accept=".bin" />
+          </label>
+        </div>
+        <label>Release notes (Markdown)
+          <textarea id="upNotes" rows="6" placeholder="What changed in this version..."></textarea>
+        </label>
+        <div class="row">
+          <button id="uploadBtn" class="primary">Upload &amp; publish</button>
+          <span id="upSha" class="muted mono"></span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Notes preview</h3>
+        <div id="notesPreview" class="markdown"></div>
+      </div>
+    </section>
+
+    <!-- ---- MANAGE ---- -->
+    <section id="tab-manage" class="tabpane hidden">
+      <div class="card">
+        <h2>Manage &amp; revert</h2>
+        <div class="grid2">
+          <label>Device Type <select id="mgDevice"></select></label>
+          <label>Battery Type <select id="mgBattery"></select></label>
+        </div>
+        <p class="muted">The ticked version is the one the updater will flash. Newest uploads first.</p>
+        <div id="versionTableWrap"><table id="versionTable"><tbody></tbody></table></div>
+      </div>
+      <div class="card">
+        <h3>Selected version notes</h3>
+        <div id="mgNotes" class="markdown"></div>
+      </div>
+    </section>
+
+    <!-- ---- SETTINGS ---- -->
+    <section id="tab-settings" class="tabpane hidden">
+      <div class="card">
+        <h2>GitHub access</h2>
+        <p class="muted">
+          Publishing writes to the firmware repo through the GitHub API, which needs a
+          <strong>fine-grained Personal Access Token</strong> with <em>Contents: Read and write</em>
+          on this repo only. It is stored in this browser's localStorage and is never committed or
+          put in the page source.
+        </p>
+        <label>GitHub token
+          <input type="password" id="tokenInput" placeholder="github_pat_..." />
+        </label>
+        <div class="row">
+          <button id="saveTokenBtn" class="primary">Save token</button>
+          <button id="testTokenBtn" class="ghost">Test connection</button>
+          <button id="clearTokenBtn" class="danger">Clear token</button>
+        </div>
+        <p id="tokenStatus" class="muted"></p>
+      </div>
+      <div class="card">
+        <h3>Target repository</h3>
+        <p class="mono" id="repoInfo"></p>
+      </div>
+    </section>
+
+    <div id="toast" class="toast hidden"></div>
+  </main>
+
+  <script src="lib/markdown.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

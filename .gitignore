@@ -1,0 +1,9 @@
+# Nothing secret should ever be committed here.
+# The GitHub token used by the admin webapp lives ONLY in the browser's
+# localStorage on the operator's machine — never in this repo.
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/

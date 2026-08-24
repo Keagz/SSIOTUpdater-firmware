@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "devices": {
+    "4G IOT": {
+      "Daly": { "activeVersion": "", "versions": [] },
+      "Bestway": { "activeVersion": "", "versions": [] },
+      "Bestway 80v": { "activeVersion": "", "versions": [] }
+    },
+    "VoltMeter": {
+      "Daly": { "activeVersion": "", "versions": [] },
+      "Bestway": { "activeVersion": "", "versions": [] },
+      "Bestway 80v": { "activeVersion": "", "versions": [] }
+    }
+  }
+}
