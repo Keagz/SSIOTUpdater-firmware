@@ -89,10 +89,13 @@ function contentsUrl(path) {
 }
 
 // Returns {sha, bytes} or null (404). Uses token if available (higher rate limit).
+// cache:"no-store" + a cache-buster keep the browser from serving a stale copy
+// (GitHub marks Contents responses cacheable for ~60s, which otherwise hid fresh uploads).
 async function ghGet(path) {
-  const res = await fetch(contentsUrl(path) + "?ref=" + encodeURIComponent(CONFIG.branch), {
-    headers: ghHeaders(true)
-  });
+  const url = contentsUrl(path)
+    + "?ref=" + encodeURIComponent(CONFIG.branch)
+    + "&_=" + Date.now();
+  const res = await fetch(url, { headers: ghHeaders(true), cache: "no-store" });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GET ${path} failed: ${res.status} ${await res.text()}`);
   const json = await res.json();
