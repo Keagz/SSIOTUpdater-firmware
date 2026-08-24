@@ -24,7 +24,7 @@ const CONFIG = {
 
 // Cosmetic gate — change these. Anyone can read them in the page source.
 const ADMIN_USER = "admin";
-const ADMIN_PASS = "changeme";
+const ADMIN_PASS = "101291Kg!";
 
 const TOKEN_KEY = "ssiot_gh_token";
 const API = "https://api.github.com";
