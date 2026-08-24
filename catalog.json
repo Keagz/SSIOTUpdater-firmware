@@ -29,8 +29,17 @@
         ]
       },
       "Bestway 80v": {
-        "activeVersion": "",
-        "versions": []
+        "activeVersion": "V709",
+        "versions": [
+          {
+            "version": "V709",
+            "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_V709.bin",
+            "sha256": "0A07E97BD2B561952EC0740B601515833B1A0E2EF19A3FB2C32226653FE817B6",
+            "size": 439616,
+            "uploadedAt": "2026-08-24T06:27:02.545Z",
+            "notes": ""
+          }
+        ]
       }
     },
     "VoltMeter": {
