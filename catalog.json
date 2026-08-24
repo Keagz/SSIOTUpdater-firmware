@@ -16,8 +16,17 @@
         ]
       },
       "Bestway": {
-        "activeVersion": "",
-        "versions": []
+        "activeVersion": "V516",
+        "versions": [
+          {
+            "version": "V516",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_V516.bin",
+            "sha256": "6B9C7D4A0238E6749007A2ACA5FB28436EF883062755CA98394EE30205875639",
+            "size": 439488,
+            "uploadedAt": "2026-08-24T06:25:42.978Z",
+            "notes": ""
+          }
+        ]
       },
       "Bestway 80v": {
         "activeVersion": "",
