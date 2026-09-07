@@ -28,6 +28,10 @@ const ADMIN_PASS = "101291Kg!";
 
 const TOKEN_KEY = "ssiot_gh_token";
 const API = "https://api.github.com";
+const RELEASE_CHANNELS = {
+  production: { pointer: "activeVersion", manifest: "manifest.json", label: "Production" },
+  candidate: { pointer: "candidateVersion", manifest: "candidate-manifest.json", label: "Candidate" }
+};
 
 /* ---------------- Small DOM helpers ---------------- */
 const $ = (sel) => document.querySelector(sel);
@@ -148,27 +152,56 @@ function emptyCatalog() {
   const devices = {};
   for (const d of CONFIG.devices) {
     devices[d] = {};
-    for (const b of CONFIG.batteries) devices[d][b] = { activeVersion: "", versions: [] };
+    for (const b of CONFIG.batteries) {
+      devices[d][b] = { activeVersion: "", candidateVersion: "", versions: [] };
+    }
   }
-  return { schemaVersion: 1, devices };
+  return { schemaVersion: 2, devices };
+}
+
+// Normalise v1 catalogs in memory. Existing releases were production releases;
+// this keeps the old production manifest contract intact when the catalog is saved.
+function normaliseCatalog(catalog) {
+  const result = catalog || emptyCatalog();
+  result.devices = result.devices || {};
+  for (const device of CONFIG.devices) {
+    result.devices[device] = result.devices[device] || {};
+    for (const battery of CONFIG.batteries) {
+      const variant = result.devices[device][battery] || {};
+      variant.activeVersion = variant.activeVersion || "";
+      variant.candidateVersion = variant.candidateVersion || "";
+      variant.versions = Array.isArray(variant.versions) ? variant.versions : [];
+      for (const release of variant.versions) {
+        if (release.channel !== "production" && release.channel !== "candidate") {
+          release.channel = "production";
+        }
+      }
+      result.devices[device][battery] = variant;
+    }
+  }
+  result.schemaVersion = 2;
+  return result;
 }
 
 async function loadCatalog() {
   const { obj } = await ghGetJson("catalog.json");
-  return obj || emptyCatalog();
+  return normaliseCatalog(obj);
 }
 
-// Build the slim manifest.json the C# updater reads, from the active versions.
-function generateManifest(catalog) {
+// Build the existing schema-v2 updater manifest for one explicit release channel.
+function generateManifest(catalog, channel) {
+  const config = RELEASE_CHANNELS[channel];
+  if (!config) throw new Error(`Unknown release channel: ${channel}`);
   const firmware = {};
   for (const device of CONFIG.devices) {
     const meta = CONFIG.deviceMeta[device];
     const byBattery = (catalog.devices[device]) || {};
     for (const battery of CONFIG.batteries) {
       const variant = byBattery[battery];
-      if (!variant || !variant.activeVersion) continue;
-      const v = (variant.versions || []).find((x) => x.version === variant.activeVersion);
-      if (!v) continue;
+      const selectedVersion = variant && variant[config.pointer];
+      if (!selectedVersion) continue;
+      const v = (variant.versions || []).find((x) => x.version === selectedVersion);
+      if (!v || v.channel !== channel) continue;
       firmware[device] = firmware[device] || {};
       firmware[device][battery] = {
         version: v.version,
@@ -184,7 +217,15 @@ function generateManifest(catalog) {
 }
 
 async function publishManifest(catalog, message) {
-  await ghPutJson("manifest.json", generateManifest(catalog), message);
+  await ghPutJson("manifest.json", generateManifest(catalog, "production"), message);
+}
+
+async function publishCandidateManifest(catalog, message) {
+  await ghPutJson(
+    "candidate-manifest.json",
+    generateManifest(catalog, "candidate"),
+    message
+  );
 }
 
 /* ---------------- Path helpers ---------------- */
@@ -269,6 +310,15 @@ function updateBanner() {
 }
 
 /* ---------------- Upload ---------------- */
+function updateUploadChannelUi() {
+  const channel = el("upChannel").value;
+  const isCandidate = channel === "candidate";
+  el("uploadBtn").textContent = isCandidate ? "Upload candidate" : "Upload production release";
+  el("upChannelHelp").textContent = isCandidate
+    ? "Candidate uploads update candidate-manifest.json only. Normal updater installations will not see this release."
+    : "Production uploads update manifest.json and become the normal updater release. Use this only after explicit approval.";
+}
+
 el("upNotes").addEventListener("input", () => {
   el("notesPreview").innerHTML = window.renderMarkdown(el("upNotes").value);
 });
@@ -278,17 +328,23 @@ el("upFile").addEventListener("change", async () => {
   const buf = await f.arrayBuffer();
   el("upSha").textContent = `SHA-256: ${await sha256Hex(buf)}  (${f.size} bytes)`;
 });
+el("upChannel").addEventListener("change", updateUploadChannelUi);
 
 el("uploadBtn").addEventListener("click", async () => {
   const device = el("upDevice").value;
   const battery = el("upBattery").value;
   const version = el("upVersion").value.trim();
+  const channel = el("upChannel").value;
   const notes = el("upNotes").value;
   const file = el("upFile").files[0];
 
   if (!version) return toast("Enter a version.", "err");
   if (!file) return toast("Choose a .bin file.", "err");
   if (!Token.has()) return toast("Add a GitHub token in Settings first.", "err");
+  if (!RELEASE_CHANNELS[channel]) return toast("Choose a valid release channel.", "err");
+  if (channel === "production" && !confirm(
+    `Publish ${device} / ${battery} ${version} to Production? Normal updater installations will receive it.`
+  )) return;
 
   const btn = el("uploadBtn");
   btn.disabled = true;
@@ -301,25 +357,41 @@ el("uploadBtn").addEventListener("click", async () => {
     // Reload catalog fresh so we never clobber a concurrent change.
     const catalog = await loadCatalog();
     const variant = catalog.devices[device][battery];
-    const exists = (variant.versions || []).some((v) => v.version === version);
-    if (exists && !confirm(`Version ${version} already exists for ${device} / ${battery}. Overwrite it?`)) {
-      btn.disabled = false; return;
+    const existingRelease = (variant.versions || []).find((v) => v.version === version);
+    if (existingRelease && existingRelease.channel !== channel) {
+      throw new Error(`Version ${version} already belongs to the ${existingRelease.channel} channel. Use the explicit promotion workflow instead of re-uploading it.`);
     }
 
-    toast("Uploading firmware...", "info");
-    await ghPut(path, bytesToBase64(bytes), `Add firmware ${device}/${battery} v${version}`,
-      (await ghGet(path))?.sha);
+    const existingBinary = await ghGet(path);
+    if (existingBinary) {
+      const existingSha = await sha256Hex(existingBinary.bytes);
+      if (existingSha !== sha) {
+        throw new Error(`Artifact ${path} already exists with a different SHA-256. Release artifacts are immutable.`);
+      }
+    } else {
+      toast("Uploading firmware...", "info");
+      await ghPut(path, bytesToBase64(bytes), `Add firmware ${channel} ${device}/${battery} v${version}`);
+    }
 
-    const entry = { version, file: path, sha256: sha, size: bytes.length,
-      uploadedAt: new Date().toISOString(), notes };
-    variant.versions = (variant.versions || []).filter((v) => v.version !== version);
-    variant.versions.unshift(entry);
-    variant.activeVersion = version;
+    if (!existingRelease) {
+      variant.versions.unshift({
+        version, channel, file: path, sha256: sha, size: bytes.length,
+        uploadedAt: new Date().toISOString(), notes
+      });
+    }
+    variant[RELEASE_CHANNELS[channel].pointer] = version;
+    if (channel === "production" && variant.candidateVersion === version) {
+      variant.candidateVersion = "";
+    }
 
-    await ghPutJson("catalog.json", catalog, `Catalog: publish ${device}/${battery} v${version}`);
-    await publishManifest(catalog, `Manifest: set ${device}/${battery} active = v${version}`);
+    await ghPutJson("catalog.json", catalog, `Catalog: publish ${channel} ${device}/${battery} v${version}`);
+    if (channel === "production") {
+      await publishManifest(catalog, `Manifest: set ${device}/${battery} production = v${version}`);
+    } else {
+      await publishCandidateManifest(catalog, `Candidate manifest: set ${device}/${battery} candidate = v${version}`);
+    }
 
-    toast(`Published ${device} / ${battery} v${version}.`, "ok");
+    toast(`Published ${channel} ${device} / ${battery} v${version}.`, "ok");
     el("upVersion").value = ""; el("upNotes").value = ""; el("upFile").value = "";
     el("upSha").textContent = ""; el("notesPreview").innerHTML = "";
   } catch (e) {
@@ -346,47 +418,70 @@ el("mgBattery").addEventListener("change", refreshManage);
 function renderVersions(catalog) {
   const device = el("mgDevice").value;
   const battery = el("mgBattery").value;
-  const variant = (catalog.devices[device] && catalog.devices[device][battery]) || { activeVersion: "", versions: [] };
+  const variant = (catalog.devices[device] && catalog.devices[device][battery]) || {
+    activeVersion: "", candidateVersion: "", versions: []
+  };
   const rows = (variant.versions || []).slice().sort((a, b) => (b.uploadedAt || "").localeCompare(a.uploadedAt || ""));
 
   const tbody = el("versionTable").querySelector("tbody");
   tbody.innerHTML =
-    "<tr><th>Active</th><th>Version</th><th>Uploaded</th><th>Size</th><th>SHA-256</th></tr>";
+    "<tr><th>Production</th><th>Candidate</th><th>Version</th><th>Channel</th><th>Uploaded</th><th>Size</th><th>SHA-256</th></tr>";
+  el("clearCandidateBtn").disabled = !variant.candidateVersion;
 
   if (rows.length === 0) {
-    tbody.innerHTML += `<tr><td colspan="5" class="muted">No firmware uploaded for this combination yet.</td></tr>`;
+    tbody.innerHTML += `<tr><td colspan="7" class="muted">No firmware uploaded for this combination yet.</td></tr>`;
     el("mgNotes").innerHTML = "";
     return;
   }
 
   for (const v of rows) {
-    const isActive = v.version === variant.activeVersion;
+    const isProduction = v.version === variant.activeVersion;
+    const isCandidate = v.version === variant.candidateVersion;
     const tr = document.createElement("tr");
-    if (isActive) tr.className = "active-row";
+    if (isProduction) tr.classList.add("active-row");
+    if (isCandidate) tr.classList.add("candidate-row");
     const when = v.uploadedAt ? new Date(v.uploadedAt).toLocaleString() : "—";
     tr.innerHTML =
-      `<td><input type="radio" name="activeVer" ${isActive ? "checked" : ""}></td>` +
-      `<td>${v.version} ${isActive ? '<span class="badge active">active</span>' : ""}</td>` +
+      `<td><input type="radio" name="productionVer" ${isProduction ? "checked" : ""} aria-label="Set production version ${v.version}"></td>` +
+      `<td><input type="radio" name="candidateVer" ${isCandidate ? "checked" : ""} ${v.channel === "candidate" ? "" : "disabled"} aria-label="Set candidate version ${v.version}"></td>` +
+      `<td>${v.version} ${isProduction ? '<span class="badge active">production</span>' : ""} ${isCandidate ? '<span class="badge candidate">candidate</span>' : ""}</td>` +
+      `<td>${v.channel}</td>` +
       `<td>${when}</td>` +
       `<td class="mono">${v.size || 0}</td>` +
       `<td class="mono">${(v.sha256 || "").slice(0, 12)}…</td>`;
-    tr.querySelector("input").addEventListener("change", () => setActive(device, battery, v.version));
+    const [productionInput, candidateInput] = tr.querySelectorAll("input");
+    productionInput.addEventListener("change", () => setProduction(device, battery, v.version));
+    candidateInput.addEventListener("change", () => setCandidate(device, battery, v.version));
     tr.addEventListener("click", () => { el("mgNotes").innerHTML = window.renderMarkdown(v.notes || "_No notes._"); });
     tbody.appendChild(tr);
   }
-  const activeEntry = rows.find((v) => v.version === variant.activeVersion) || rows[0];
+  const activeEntry = rows.find((v) => v.version === variant.activeVersion)
+    || rows.find((v) => v.version === variant.candidateVersion)
+    || rows[0];
   el("mgNotes").innerHTML = window.renderMarkdown(activeEntry.notes || "_No notes._");
 }
 
-async function setActive(device, battery, version) {
+async function setProduction(device, battery, version) {
   if (!Token.has()) { toast("Add a GitHub token in Settings first.", "err"); refreshManage(); return; }
+  if (!confirm(`Set ${device} / ${battery} ${version} as Production? Normal updater installations will receive it.`)) {
+    refreshManage(); return;
+  }
   try {
-    toast(`Setting ${version} active...`, "info");
+    toast(`Promoting or rolling back ${version}...`, "info");
     const catalog = await loadCatalog();
-    catalog.devices[device][battery].activeVersion = version;
-    await ghPutJson("catalog.json", catalog, `Catalog: ${device}/${battery} active = v${version}`);
-    await publishManifest(catalog, `Manifest: ${device}/${battery} active = v${version}`);
-    toast(`${device} / ${battery} now active: v${version}.`, "ok");
+    const variant = catalog.devices[device][battery];
+    const release = (variant.versions || []).find((v) => v.version === version);
+    if (!release) throw new Error(`Release ${version} does not exist.`);
+    const wasSelectedCandidate = variant.candidateVersion === version;
+    release.channel = "production";
+    variant.activeVersion = version;
+    if (wasSelectedCandidate) variant.candidateVersion = "";
+    await ghPutJson("catalog.json", catalog, `Catalog: set production ${device}/${battery} = v${version}`);
+    await publishManifest(catalog, `Manifest: set ${device}/${battery} production = v${version}`);
+    if (wasSelectedCandidate) {
+      await publishCandidateManifest(catalog, `Candidate manifest: retire promoted ${device}/${battery} v${version}`);
+    }
+    toast(`${device} / ${battery} production is now v${version}.`, "ok");
     renderVersions(catalog);
   } catch (e) {
     toast("Failed: " + e.message, "err");
@@ -394,12 +489,51 @@ async function setActive(device, battery, version) {
   }
 }
 
+async function setCandidate(device, battery, version) {
+  if (!Token.has()) { toast("Add a GitHub token in Settings first.", "err"); refreshManage(); return; }
+  try {
+    toast(`Selecting candidate ${version}...`, "info");
+    const catalog = await loadCatalog();
+    const variant = catalog.devices[device][battery];
+    const release = (variant.versions || []).find((v) => v.version === version);
+    if (!release || release.channel !== "candidate") throw new Error(`Release ${version} is not a candidate.`);
+    variant.candidateVersion = version;
+    await ghPutJson("catalog.json", catalog, `Catalog: set candidate ${device}/${battery} = v${version}`);
+    await publishCandidateManifest(catalog, `Candidate manifest: set ${device}/${battery} candidate = v${version}`);
+    toast(`${device} / ${battery} candidate is now v${version}.`, "ok");
+    renderVersions(catalog);
+  } catch (e) {
+    toast("Failed: " + e.message, "err");
+    refreshManage();
+  }
+}
+
+el("clearCandidateBtn").addEventListener("click", async () => {
+  const device = el("mgDevice").value;
+  const battery = el("mgBattery").value;
+  if (!Token.has()) { toast("Add a GitHub token in Settings first.", "err"); return; }
+  if (!confirm(`Clear the selected Candidate for ${device} / ${battery}? Test updaters will no longer receive a candidate for it.`)) return;
+  try {
+    const catalog = await loadCatalog();
+    const variant = catalog.devices[device][battery];
+    variant.candidateVersion = "";
+    await ghPutJson("catalog.json", catalog, `Catalog: clear candidate ${device}/${battery}`);
+    await publishCandidateManifest(catalog, `Candidate manifest: clear ${device}/${battery}`);
+    toast(`Cleared the ${device} / ${battery} candidate.`, "ok");
+    renderVersions(catalog);
+  } catch (e) {
+    toast("Failed: " + e.message, "err");
+    refreshManage();
+  }
+});
+
 /* ---------------- Init ---------------- */
 function afterLogin() {
   fillSelect(el("upDevice"), CONFIG.devices);
   fillSelect(el("upBattery"), CONFIG.batteries);
   fillSelect(el("mgDevice"), CONFIG.devices);
   fillSelect(el("mgBattery"), CONFIG.batteries);
+  updateUploadChannelUi();
   updateBanner();
   if (Token.has()) el("tokenStatus").textContent = "A token is stored in this browser.";
 }

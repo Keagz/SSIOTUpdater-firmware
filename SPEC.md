@@ -1,8 +1,8 @@
 # Firmware Repo + Admin Webapp — Spec
 
 ## Purpose
-Host firmware for the SS IOT Firmware Updater and provide a static GitHub Pages webapp to publish new
-firmware and revert to older versions, without changing the updater's contract.
+Host firmware for the SS IOT Firmware Updater and provide a static GitHub Pages webapp to publish,
+test, promote, and roll back releases without changing the updater's production manifest contract.
 
 ## Selection model
 Firmware is chosen by **Device Type × Battery Type**:
@@ -14,13 +14,14 @@ Firmware is chosen by **Device Type × Battery Type**:
 ### `catalog.json` — source of truth (webapp reads/writes)
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "devices": {
     "<Device Type>": {
       "<Battery Type>": {
         "activeVersion": "6.1.0",
+        "candidateVersion": "A011",
         "versions": [
-          { "version": "6.1.0",
+          { "version": "6.1.0", "channel": "production",
             "file": "firmware/4g-iot/daly/4g-iot_daly_6.1.0.bin",
             "sha256": "<upper-hex>", "size": 1234567,
             "uploadedAt": "2026-08-24T10:30:00Z",
@@ -32,6 +33,10 @@ Firmware is chosen by **Device Type × Battery Type**:
 }
 ```
 Versions are kept forever; newest is shown first (sorted by `uploadedAt`).
+`activeVersion` selects the normal Production updater release. The optional
+`candidateVersion` selects the explicit test-only Candidate updater release. A release entry's
+`channel` is `production` or `candidate`; legacy entries without it are normalised to
+`production` by the webapp.
 
 ### `manifest.json` — generated, read by the C# updater (schema v2, do not hand-edit)
 ```json
@@ -45,23 +50,33 @@ Built from each variant's `activeVersion`. `chip`/`offset` derive from Device Ty
 active version are omitted. This exactly matches `FirmwareManifest.Manifest` in the desktop app —
 keep the shape stable.
 
+### `candidate-manifest.json` — generated, test-only updater input
+
+This has the exact same schema-v2 shape as `manifest.json`, but is built from
+`candidateVersion` only. It must not be fetched by normal updater installations. An empty candidate
+channel is represented as `{ "schemaVersion": 2, "firmware": {} }`.
+
 ## Webapp (`docs/`, vanilla JS, no build)
 - `index.html`, `style.css`, `app.js`, `lib/markdown.js` (tiny, self-contained Markdown renderer —
   no runtime CDN dependency).
 - **Login**: hardcoded `ADMIN_USER`/`ADMIN_PASS` in `app.js` (cosmetic gate).
 - **Settings**: fine-grained GitHub PAT (Contents: read/write, this repo only) stored in
   `localStorage`; connection test.
-- **Upload**: Device + Battery + version + Markdown notes + `.bin` → SHA-256 (Web Crypto) → commit
-  `.bin` → update `catalog.json` (active) → regenerate `manifest.json`.
-- **Manage/Revert**: list versions newest-first; tick to set active (updates catalog + manifest).
+- **Upload**: Device + Battery + channel + version + Markdown notes + `.bin` → SHA-256 (Web Crypto)
+  → commit immutable `.bin` → update `catalog.json` → regenerate only that channel's manifest.
+  Candidate is the UI default; a Production upload requires explicit confirmation.
+- **Manage**: list versions newest-first; choose a Candidate release for the test manifest, promote a
+  release to Production, roll Production back to a retained version, or clear a candidate selection.
 
 ## GitHub API
 GitHub **Contents API** (CORS-enabled), token in `Authorization: Bearer`:
 - `GET /repos/{owner}/{repo}/contents/{path}?ref={branch}` → base64 + blob `sha`.
 - `PUT /repos/{owner}/{repo}/contents/{path}` with `{message, content(base64), branch, sha?}`;
   updating an existing file needs its current `sha` (GET before PUT; retry once on `409`).
-- Publish order: `.bin` → `catalog.json` → `manifest.json` (three commits). `manifest.json` is always
-  regenerated from `catalog.json` so a partial failure is safe to re-run.
+- Publish order: immutable `.bin` → `catalog.json` → the selected channel manifest (three commits).
+  The generated manifest is always rebuilt from `catalog.json`, so a partial failure is safe to
+  re-run with the same binary and SHA-256. Promoting a selected candidate also regenerates the
+  candidate manifest to retire its test selection.
 
 ## Constraints
 - ESP `.bin`s (~1–4 MB) fit the Contents API (base64 inflates the request ~33%; ~50 MB practical cap).
@@ -70,5 +85,4 @@ GitHub **Contents API** (CORS-enabled), token in `Authorization: Bearer`:
 - Repo must be **public** for the updater's unauthenticated `raw.githubusercontent.com` fetch.
 
 ## Out of scope (v1)
-Delete/prune versions, atomic multi-file commits, real per-user auth, version diffs, drag-and-drop,
-release channels.
+Delete/prune versions, atomic multi-file commits, real per-user auth, version diffs, and drag-and-drop.

@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "devices": {
     "4G IOT": {
       "Daly": {
         "activeVersion": "V010",
+        "candidateVersion": "",
         "versions": [
           {
             "version": "V010",
+            "channel": "production",
             "file": "firmware/4g-iot/daly/4g-iot_daly_V010.bin",
             "sha256": "6DD36871E5BE06C30F1AD53EE5A6554FC85A090E3E140129A4D001FC9C93E7E1",
             "size": 358976,
@@ -17,9 +19,11 @@
       },
       "Bestway": {
         "activeVersion": "V516",
+        "candidateVersion": "",
         "versions": [
           {
             "version": "V516",
+            "channel": "production",
             "file": "firmware/4g-iot/bestway/4g-iot_bestway_V516.bin",
             "sha256": "6B9C7D4A0238E6749007A2ACA5FB28436EF883062755CA98394EE30205875639",
             "size": 439488,
@@ -30,9 +34,11 @@
       },
       "Bestway 80v": {
         "activeVersion": "V709",
+        "candidateVersion": "",
         "versions": [
           {
             "version": "V709",
+            "channel": "production",
             "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_V709.bin",
             "sha256": "0A07E97BD2B561952EC0740B601515833B1A0E2EF19A3FB2C32226653FE817B6",
             "size": 439616,
@@ -45,14 +51,17 @@
     "VoltMeter": {
       "Daly": {
         "activeVersion": "",
+        "candidateVersion": "",
         "versions": []
       },
       "Bestway": {
         "activeVersion": "",
+        "candidateVersion": "",
         "versions": []
       },
       "Bestway 80v": {
         "activeVersion": "",
+        "candidateVersion": "",
         "versions": []
       }
     }

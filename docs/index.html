@@ -37,7 +37,7 @@
     <!-- ---- UPLOAD ---- -->
     <section id="tab-upload" class="tabpane">
       <div class="card">
-        <h2>Upload new firmware</h2>
+        <h2>Upload firmware release</h2>
         <div class="grid2">
           <label>Device Type
             <select id="upDevice"></select>
@@ -48,6 +48,12 @@
           <label>Version
             <input type="text" id="upVersion" placeholder="e.g. 6.0.0" />
           </label>
+          <label>Release channel
+            <select id="upChannel">
+              <option value="candidate" selected>Candidate (test only)</option>
+              <option value="production">Production (normal updater)</option>
+            </select>
+          </label>
           <label>Firmware file (.bin)
             <input type="file" id="upFile" accept=".bin" />
           </label>
@@ -56,9 +62,10 @@
           <textarea id="upNotes" rows="6" placeholder="What changed in this version..."></textarea>
         </label>
         <div class="row">
-          <button id="uploadBtn" class="primary">Upload &amp; publish</button>
+          <button id="uploadBtn" class="primary">Upload candidate</button>
           <span id="upSha" class="muted mono"></span>
         </div>
+        <p id="upChannelHelp" class="muted channel-help"></p>
       </div>
       <div class="card">
         <h3>Notes preview</h3>
@@ -69,12 +76,15 @@
     <!-- ---- MANAGE ---- -->
     <section id="tab-manage" class="tabpane hidden">
       <div class="card">
-        <h2>Manage &amp; revert</h2>
+        <h2>Manage channels, promotion &amp; rollback</h2>
         <div class="grid2">
           <label>Device Type <select id="mgDevice"></select></label>
           <label>Battery Type <select id="mgBattery"></select></label>
         </div>
-        <p class="muted">The ticked version is the one the updater will flash. Newest uploads first.</p>
+        <p class="muted">Production is the normal updater channel. Candidate is test-only and requires an explicit updater selection. Promoting a candidate changes only the production manifest; it never overwrites the binary.</p>
+        <div class="row">
+          <button id="clearCandidateBtn" class="ghost">Clear candidate selection</button>
+        </div>
         <div id="versionTableWrap"><table id="versionTable"><tbody></tbody></table></div>
       </div>
       <div class="card">
