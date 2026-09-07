@@ -4,8 +4,17 @@
     "4G IOT": {
       "Daly": {
         "activeVersion": "V010",
-        "candidateVersion": "",
+        "candidateVersion": "A011",
         "versions": [
+          {
+            "version": "A011",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/daly/4g-iot_daly_A011.bin",
+            "sha256": "71A53EE33B0398C8C3C660A43579DF95D4B7DE05C1CF65A7B80204C342F1FD3A",
+            "size": 425008,
+            "uploadedAt": "2026-09-07T13:26:25.852Z",
+            "notes": "Testing Remote Updating"
+          },
           {
             "version": "V010",
             "channel": "production",
