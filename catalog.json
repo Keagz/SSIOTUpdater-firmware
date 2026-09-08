@@ -4,8 +4,17 @@
     "4G IOT": {
       "Daly": {
         "activeVersion": "V010",
-        "candidateVersion": "A015",
+        "candidateVersion": "A016",
         "versions": [
+          {
+            "version": "A016",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/daly/4g-iot_daly_A016.bin",
+            "sha256": "42C991C6EE88575C8ADFEB75E449007DCB833744FE1B65A7DA787D14A4A27346",
+            "size": 426080,
+            "uploadedAt": "2026-09-08T12:04:30.608Z",
+            "notes": ""
+          },
           {
             "version": "A015",
             "channel": "candidate",
