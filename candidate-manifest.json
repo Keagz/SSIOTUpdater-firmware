@@ -3,9 +3,9 @@
   "firmware": {
     "4G IOT": {
       "Daly": {
-        "version": "A013",
-        "file": "firmware/4g-iot/daly/4g-iot_daly_A013.bin",
-        "sha256": "D705D549AA506792E737C122B6A40C9CA3D77FA56054FA3144931A93A5272438",
+        "version": "A014",
+        "file": "firmware/4g-iot/daly/4g-iot_daly_A014.bin",
+        "sha256": "F27DC0D3841486BEA14AFC8857C8B4935472BCF53BB1B5A4AE29D0CD1960B1A3",
         "size": 425104,
         "chip": "esp32s3",
         "offset": "0x10000"
