@@ -315,7 +315,7 @@ function updateUploadChannelUi() {
   const isCandidate = channel === "candidate";
   el("uploadBtn").textContent = isCandidate ? "Upload candidate" : "Upload production release";
   el("upChannelHelp").textContent = isCandidate
-    ? "Candidate uploads update candidate-manifest.json only. Normal updater installations will not see this release."
+    ? "Candidate uploads update candidate-manifest.json only. Normal updater installations will not see this release. After GitHub publishes it, the selected Candidate is mirrored to the isolated Cloudflare OTA host."
     : "Production uploads update manifest.json and become the normal updater release. Use this only after explicit approval.";
 }
 
