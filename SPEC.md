@@ -66,7 +66,9 @@ channel is represented as `{ "schemaVersion": 2, "firmware": {} }`.
   → commit immutable `.bin` → update `catalog.json` → regenerate only that channel's manifest.
   Candidate is the UI default; a Production upload requires explicit confirmation.
 - **Manage**: list versions newest-first; choose a Candidate release for the test manifest, promote a
-  release to Production, roll Production back to a retained version, or clear a candidate selection.
+  release to Production, roll Production back to a retained version, clear a candidate selection, or
+  permanently delete an unselected Candidate release. Production releases and the selected Candidate
+  are protected from deletion.
 
 ## GitHub API
 GitHub **Contents API** (CORS-enabled), token in `Authorization: Bearer`:
@@ -85,4 +87,4 @@ GitHub **Contents API** (CORS-enabled), token in `Authorization: Bearer`:
 - Repo must be **public** for the updater's unauthenticated `raw.githubusercontent.com` fetch.
 
 ## Out of scope (v1)
-Delete/prune versions, atomic multi-file commits, real per-user auth, version diffs, and drag-and-drop.
+Atomic multi-file commits, real per-user auth, version diffs, and drag-and-drop.

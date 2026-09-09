@@ -78,6 +78,7 @@ button:hover { border-color: var(--muted); }
 button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
 button.primary:hover { background: var(--primary-hover); }
 button.danger { color: var(--red); }
+button.compact { padding: 5px 9px; font-size: 12px; }
 button.ghost { background: transparent; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 

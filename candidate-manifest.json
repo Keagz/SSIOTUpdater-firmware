@@ -11,17 +11,17 @@
         "offset": "0x10000"
       },
       "Bestway": {
-        "version": "A712",
-        "file": "firmware/4g-iot/bestway/4g-iot_bestway_A712.bin",
-        "sha256": "99D1CE325B47D3954DFDA90F1DF434DA01FFB53EE337C830B57825CB2C3BA818",
-        "size": 507072,
+        "version": "A519",
+        "file": "firmware/4g-iot/bestway/4g-iot_bestway_A519.bin",
+        "sha256": "2358E6094673497F8AF0A3B7726DE6632EB36CD124E545C76B4DD5C7F37C09F3",
+        "size": 506896,
         "chip": "esp32s3",
         "offset": "0x10000"
       },
       "Bestway 80v": {
-        "version": "A711",
-        "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A711.bin",
-        "sha256": "F0C5B34B09AC72D32232AC68DD29C1BCB8B46DF25409E57842389EB2B887D2B9",
+        "version": "A712",
+        "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A712.bin",
+        "sha256": "99D1CE325B47D3954DFDA90F1DF434DA01FFB53EE337C830B57825CB2C3BA818",
         "size": 507072,
         "chip": "esp32s3",
         "offset": "0x10000"

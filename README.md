@@ -28,10 +28,14 @@ Firmware is selected by **Device Type** (`4G IOT`, `VoltMeter`) × **Battery Typ
 ## Publishing firmware
 
 - **Upload tab:** choose Device + Battery, pick the `.bin`, set a version, add Markdown notes, click
-  **Upload & publish**. The app hashes the file (SHA-256), commits it, records it in `catalog.json`
-  as active, and regenerates `manifest.json`.
+  **Upload & publish**. Candidate is the default channel: the app hashes the file (SHA-256), commits
+  an immutable artifact, updates only `candidateVersion`, and regenerates only
+  `candidate-manifest.json`. Production upload requires explicit confirmation.
 - **Manage & Revert tab:** pick a Device + Battery to see all versions newest-first; tick any version
-  to make it active (revert). `manifest.json` is regenerated so the updater picks it up.
+  to select it as a Candidate, promote an approved version to Production, or revert Production to a
+  retained version. Promotion or rollback regenerates `manifest.json` so normal updater installations
+  pick it up. The **Delete** control permanently removes an unselected Candidate release and its
+  binary after confirmation; Production and currently selected Candidate releases are protected.
 
 ## Security note
 

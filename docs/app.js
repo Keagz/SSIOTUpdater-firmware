@@ -124,6 +124,19 @@ async function ghPut(path, base64Content, message, sha) {
   return res.json();
 }
 
+async function ghDelete(path, message) {
+  if (!Token.has()) throw new Error("No GitHub token set. Add one under Settings.");
+  const current = await ghGet(path);
+  if (!current) return false;
+  const res = await fetch(contentsUrl(path), {
+    method: "DELETE",
+    headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders(true)),
+    body: JSON.stringify({ message, branch: CONFIG.branch, sha: current.sha })
+  });
+  if (!res.ok) throw new Error(`DELETE ${path} failed: ${res.status} ${await res.text()}`);
+  return true;
+}
+
 // Read a JSON file; returns {obj, sha} or {obj:null, sha:null} if missing.
 async function ghGetJson(path) {
   const got = await ghGet(path);
@@ -425,11 +438,11 @@ function renderVersions(catalog) {
 
   const tbody = el("versionTable").querySelector("tbody");
   tbody.innerHTML =
-    "<tr><th>Production</th><th>Candidate</th><th>Version</th><th>Channel</th><th>Uploaded</th><th>Size</th><th>SHA-256</th></tr>";
+    "<tr><th>Production</th><th>Candidate</th><th>Version</th><th>Channel</th><th>Uploaded</th><th>Size</th><th>SHA-256</th><th>Actions</th></tr>";
   el("clearCandidateBtn").disabled = !variant.candidateVersion;
 
   if (rows.length === 0) {
-    tbody.innerHTML += `<tr><td colspan="7" class="muted">No firmware uploaded for this combination yet.</td></tr>`;
+    tbody.innerHTML += `<tr><td colspan="8" class="muted">No firmware uploaded for this combination yet.</td></tr>`;
     el("mgNotes").innerHTML = "";
     return;
   }
@@ -452,6 +465,23 @@ function renderVersions(catalog) {
     const [productionInput, candidateInput] = tr.querySelectorAll("input");
     productionInput.addEventListener("change", () => setProduction(device, battery, v.version));
     candidateInput.addEventListener("change", () => setCandidate(device, battery, v.version));
+    const actionCell = document.createElement("td");
+    const deleteButton = document.createElement("button");
+    const canDelete = v.channel === "candidate" && !isProduction && !isCandidate;
+    deleteButton.type = "button";
+    deleteButton.className = "danger compact";
+    deleteButton.textContent = "Delete";
+    deleteButton.disabled = !canDelete;
+    deleteButton.title = canDelete
+      ? "Permanently remove this unselected candidate release and its binary."
+      : "Only unselected candidate releases can be deleted.";
+    deleteButton.setAttribute("aria-label", `Delete candidate release ${v.version}`);
+    deleteButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      deleteRelease(device, battery, v.version);
+    });
+    actionCell.appendChild(deleteButton);
+    tr.appendChild(actionCell);
     tr.addEventListener("click", () => { el("mgNotes").innerHTML = window.renderMarkdown(v.notes || "_No notes._"); });
     tbody.appendChild(tr);
   }
@@ -504,6 +534,34 @@ async function setCandidate(device, battery, version) {
     renderVersions(catalog);
   } catch (e) {
     toast("Failed: " + e.message, "err");
+    refreshManage();
+  }
+}
+
+async function deleteRelease(device, battery, version) {
+  if (!Token.has()) { toast("Add a GitHub token in Settings first.", "err"); return; }
+  try {
+    const catalog = await loadCatalog();
+    const variant = catalog.devices[device][battery];
+    const release = (variant.versions || []).find((v) => v.version === version);
+    if (!release) throw new Error(`Release ${version} does not exist.`);
+    if (release.channel !== "candidate") throw new Error("Only candidate releases can be deleted.");
+    if (variant.activeVersion === version || variant.candidateVersion === version) {
+      throw new Error("Select another candidate or clear the candidate selection before deleting this release.");
+    }
+    if (!confirm(
+      `Permanently delete candidate ${device} / ${battery} ${version} and its binary? This cannot be undone. Production and selected Candidate releases are protected.`
+    )) return;
+
+    toast(`Deleting candidate ${version}...`, "info");
+    variant.versions = variant.versions.filter((v) => v !== release);
+    await ghPutJson("catalog.json", catalog, `Catalog: delete candidate ${device}/${battery} v${version}`);
+    await publishCandidateManifest(catalog, `Candidate manifest: remove deleted ${device}/${battery} v${version}`);
+    await ghDelete(release.file, `Delete firmware candidate ${device}/${battery} v${version}`);
+    toast(`Deleted candidate ${device} / ${battery} v${version}.`, "ok");
+    renderVersions(catalog);
+  } catch (e) {
+    toast("Delete failed: " + e.message, "err");
     refreshManage();
   }
 }

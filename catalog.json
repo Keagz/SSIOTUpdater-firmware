@@ -91,17 +91,8 @@
       },
       "Bestway": {
         "activeVersion": "V516",
-        "candidateVersion": "A712",
+        "candidateVersion": "A519",
         "versions": [
-          {
-            "version": "A712",
-            "channel": "candidate",
-            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A712.bin",
-            "sha256": "99D1CE325B47D3954DFDA90F1DF434DA01FFB53EE337C830B57825CB2C3BA818",
-            "size": 507072,
-            "uploadedAt": "2026-09-09T17:31:41.419Z",
-            "notes": ""
-          },
           {
             "version": "A519",
             "channel": "candidate",
@@ -133,8 +124,17 @@
       },
       "Bestway 80v": {
         "activeVersion": "V709",
-        "candidateVersion": "A711",
+        "candidateVersion": "A712",
         "versions": [
+          {
+            "version": "A712",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A712.bin",
+            "sha256": "99D1CE325B47D3954DFDA90F1DF434DA01FFB53EE337C830B57825CB2C3BA818",
+            "size": 507072,
+            "uploadedAt": "2026-09-09T17:31:41.419Z",
+            "notes": "Version-only Bestway 80 V OTA proof target; otherwise identical to A711. Candidate-only; the Bestway OTA runbook bench gates remain required before any OTA proof or field use."
+          },
           {
             "version": "A711",
             "channel": "candidate",
