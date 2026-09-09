@@ -91,8 +91,17 @@
       },
       "Bestway": {
         "activeVersion": "V516",
-        "candidateVersion": "A519",
+        "candidateVersion": "A712",
         "versions": [
+          {
+            "version": "A712",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A712.bin",
+            "sha256": "99D1CE325B47D3954DFDA90F1DF434DA01FFB53EE337C830B57825CB2C3BA818",
+            "size": 507072,
+            "uploadedAt": "2026-09-09T17:31:41.419Z",
+            "notes": ""
+          },
           {
             "version": "A519",
             "channel": "candidate",
