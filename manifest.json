@@ -11,10 +11,10 @@
         "offset": "0x10000"
       },
       "Bestway": {
-        "version": "V516",
-        "file": "firmware/4g-iot/bestway/4g-iot_bestway_V516.bin",
-        "sha256": "6B9C7D4A0238E6749007A2ACA5FB28436EF883062755CA98394EE30205875639",
-        "size": 439488,
+        "version": "A518",
+        "file": "firmware/4g-iot/bestway/4g-iot_bestway_A518.bin",
+        "sha256": "EF812EA5767206402F1D86B00CA628886F86182A4FB951008D3AB37963513661",
+        "size": 506896,
         "chip": "esp32s3",
         "offset": "0x10000"
       },
