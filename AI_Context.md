@@ -79,11 +79,14 @@ Vanilla HTML/CSS/JS, **no build step**, so it deploys straight to GitHub Pages.
 
 The C# side (`Keagz/SSIOTUpdater`, `SS_IOT_FWUpdater/Firmware/FirmwareService.cs` +
 `FirmwareManifest.cs`) reads `manifest.json` from `FirmwareService.BaseUrl`
-(`https://raw.githubusercontent.com/Keagz/SSIOTUpdater-firmware/main/`), caches binaries under
-`%LocalAppData%\SS_IOT_FWUpdater\`, and verifies SHA-256 before flashing. **If you change
-`manifest.json`'s schema here, you must update that C# code too** — otherwise the tool breaks.
-`candidate-manifest.json` intentionally has the same schema, so the later updater change should only
-choose a manifest filename and separate cache, not change the data model.
+(`https://raw.githubusercontent.com/Keagz/SSIOTUpdater-firmware/main/`) by default,
+caches binaries under `%LocalAppData%\SS_IOT_FWUpdater\`, and verifies SHA-256 before
+flashing. After the existing admin unlock, the released Candidate flow can explicitly
+select `candidate-manifest.json`; it stores Candidate data below
+`%LocalAppData%\SS_IOT_FWUpdater\candidate` and returns to Production on the next
+application launch. **If you change either manifest's schema here, you must update
+that C# code too** — otherwise the tool breaks. Both manifests intentionally use the
+same schema so channel selection does not require a data-model change.
 
 ## Common tasks
 
@@ -123,8 +126,13 @@ repoints Production to a retained verified artifact.
 The admin UI defaults new uploads to Candidate, requires confirmation for a
 Production upload or promotion, and rejects a changed binary at an existing artifact
 path. Candidate and Production manifests are independently regenerated. The desktop
-updater does not yet consume `candidate-manifest.json`; step 2 must add its explicit
-opt-in selection and separate local cache before test flashing begins.
+updater now consumes `candidate-manifest.json` only through its explicit Candidate
+selection and isolated cache. This support is committed in `e92fae3` and released
+through the normal ClickOnce update channel as `1.0.0.57`.
+
+Current state: the Candidate manifest selects Daly A011. Production `manifest.json`
+still selects V010 (Daly), V516 (Bestway), and V709 (Bestway 80 V). A Candidate
+selection is test-only availability, not fleet approval or a Production promotion.
 
 The public repository is appropriate for integrity-verified distribution, not as a
 confidentiality or authorisation boundary.

@@ -31,10 +31,12 @@ jobs:
             echo "::error::Set the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository Action secrets before publishing the OTA host."
             exit 1
           fi
-      - name: Prepare selected Production and Candidate artifacts
+      - name: Prepare and validate all catalogued 4G-IOT artifacts
         run: node ota-host/prepare-assets.mjs
       - name: Deploy isolated OTA host
         run: npx --yes wrangler@4 deploy --config ota-host/wrangler.jsonc --keep-vars
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Verify deployed plain-HTTP artifacts
+        run: node ota-host/verify-deployment.mjs
