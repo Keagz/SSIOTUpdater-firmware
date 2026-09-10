@@ -123,7 +123,7 @@
         ]
       },
       "Bestway 80v": {
-        "activeVersion": "V709",
+        "activeVersion": "A711",
         "candidateVersion": "A712",
         "versions": [
           {
@@ -137,7 +137,7 @@
           },
           {
             "version": "A711",
-            "channel": "candidate",
+            "channel": "production",
             "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A711.bin",
             "sha256": "F0C5B34B09AC72D32232AC68DD29C1BCB8B46DF25409E57842389EB2B887D2B9",
             "size": 507072,
