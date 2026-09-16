@@ -124,8 +124,17 @@
       },
       "Bestway 80v": {
         "activeVersion": "A711",
-        "candidateVersion": "A712",
+        "candidateVersion": "A713",
         "versions": [
+          {
+            "version": "A713",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A713.bin",
+            "sha256": "982B78E51A345E4F1BA26811D481314A3FA0A036DB012AEBA9E3615D85736AC5",
+            "size": 507936,
+            "uploadedAt": "2026-09-16T08:02:50.742Z",
+            "notes": "Bestway 80 V parser-reliability candidate: ignores diagnostic status-sign bytes for acceptance, rejects zero voltage/SOC/temperature, requires two agreeing frames, and permits only a zero-current unknown-status fallback with remote diagnostics. Candidate-only; bench validation is required before field deployment."
+          },
           {
             "version": "A712",
             "channel": "candidate",
