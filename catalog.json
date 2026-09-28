@@ -84,15 +84,24 @@
             "file": "firmware/4g-iot/daly/4g-iot_daly_V010.bin",
             "sha256": "6DD36871E5BE06C30F1AD53EE5A6554FC85A090E3E140129A4D001FC9C93E7E1",
             "size": 358976,
-            "uploadedAt": "2026-08-24T06:17:22.060Z",
+            "uploadedAt": "2026-08-24T06:17:22.06Z",
             "notes": ""
           }
         ]
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A519",
+        "candidateVersion": "A520",
         "versions": [
+          {
+            "version": "A520",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A520.bin",
+            "sha256": "DD1604FC5AC288C2BC3536F35173012DA07C0D7CD9364F5FA9A39979541EAC2C",
+            "size": 507392,
+            "uploadedAt": "2026-09-28T09:02:23.5714468Z",
+            "notes": "Low-SOC buzzer threshold raised from 30% to 40% (buzzer on at SOC <= 40%). Candidate for bench validation only; not field-approved."
+          },
           {
             "version": "A519",
             "channel": "candidate",
@@ -108,7 +117,7 @@
             "file": "firmware/4g-iot/bestway/4g-iot_bestway_A518.bin",
             "sha256": "EF812EA5767206402F1D86B00CA628886F86182A4FB951008D3AB37963513661",
             "size": 506896,
-            "uploadedAt": "2026-09-09T05:38:19.170Z",
+            "uploadedAt": "2026-09-09T05:38:19.17Z",
             "notes": "Wired Bestway 24/48 V OTA transport repair. Candidate-only; requires the Bestway OTA runbook bench gates before any OTA proof or field use."
           },
           {
@@ -150,7 +159,7 @@
             "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A711.bin",
             "sha256": "F0C5B34B09AC72D32232AC68DD29C1BCB8B46DF25409E57842389EB2B887D2B9",
             "size": 507072,
-            "uploadedAt": "2026-09-09T05:38:19.170Z",
+            "uploadedAt": "2026-09-09T05:38:19.17Z",
             "notes": "Wired Bestway 80 V OTA transport repair. Candidate-only; requires the Bestway OTA runbook bench gates before any OTA proof or field use."
           },
           {
