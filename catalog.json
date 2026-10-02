@@ -133,8 +133,17 @@
       },
       "Bestway 80v": {
         "activeVersion": "A711",
-        "candidateVersion": "A714",
+        "candidateVersion": "A715",
         "versions": [
+          {
+            "version": "A715",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A715.bin",
+            "sha256": "B0093841F4E0D2A0CE5AFC915B8D9A512BE8DBC61C651E02DDE622E0BA939B5B",
+            "size": 511456,
+            "uploadedAt": "2026-10-02T09:33:25.000Z",
+            "notes": "Bestway 80 V evidence-based current fix (A714 plus fix; capture retained). Purpose: make charge/discharge current visible on 80 V units. Maps field status words from 18 days of A711-A714 data (0x1141 charging +A; 0xC243/0xD143/0xC343 discharging -A; 0xD742/0x0642/0xC642 at full and 0xD343 idle: 0 A or -A). Validates the CRC-16/Modbus in bytes 36-37, stops comparing that CRC as a cycle count (CCC posted as 0), adds diag B7 for CRC rejects and keeps the real rejection reason. Assumptions are not yet confirmed by a labelled site capture. Candidate-only; not bench-validated."
+          },
           {
             "version": "A714",
             "channel": "candidate",
