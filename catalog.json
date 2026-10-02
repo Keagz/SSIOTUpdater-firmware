@@ -133,8 +133,17 @@
       },
       "Bestway 80v": {
         "activeVersion": "A711",
-        "candidateVersion": "A713",
+        "candidateVersion": "A714",
         "versions": [
+          {
+            "version": "A714",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway-80v/4g-iot_bestway-80v_A714.bin",
+            "sha256": "48B02D55F300C25E12F9E79B41AC3FE83DA4F1DFDC4B0ACD68783E822ABC9442",
+            "size": 511200,
+            "uploadedAt": "2026-10-02T09:01:56.000Z",
+            "notes": "Bestway 80 V frame-capture diagnostic candidate (A713 plus capture). Purpose: identify the real current and cycle-count words. Both A7xx units report A:0.0 on every reading and a random CCC, while SOC cycles daily. Every SSPortal post carries the raw 38-byte BMS frame (fra/frr); every fifth post adds a passive census of all 5A A5 frames on the bus (fc/fx). Frame acceptance, posted values and the legacy request are unchanged from A713. Serial admin: frames, CAPTURE:ON/OFF. Adds about 90 KB/day while capture is on. Candidate-only; not bench-validated."
+          },
           {
             "version": "A713",
             "channel": "candidate",
