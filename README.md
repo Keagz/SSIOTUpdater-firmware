@@ -8,8 +8,10 @@ Central firmware repository for the **SS IOT Firmware Updater** desktop tool, pl
 | Path | Purpose |
 |------|---------|
 | `manifest.json` | Slim, **active-only** index the C# updater reads (schema v2). **Generated** — don't hand-edit. |
+| `candidate-manifest.json` | Explicit test-only Candidate index with the same schema; never the startup default. |
 | `catalog.json` | Full version history + which version is active per Device/Battery. Source of truth for the webapp. |
 | `firmware/<device>/<battery>/*.bin` | Every uploaded firmware, kept forever. |
+| `ota-host/` | Validates all catalogued 4G-IOT artifacts and deploys the modem-facing plain-HTTP mirror. |
 | `docs/` | The admin webapp served by GitHub Pages. |
 | `SPEC.md` | Design spec. |
 
@@ -44,3 +46,23 @@ The login screen is a **cosmetic gate** (this is public JavaScript). Real write 
 a valid token, and the firmware here is public to read anyway. Never commit a token.
 
 See [SPEC.md](SPEC.md) for the full design.
+
+## Current release snapshot — 2026-10-05
+
+| Family | Production | Candidate |
+| --- | --- | --- |
+| Daly | A017 | A021 |
+| Bestway | A518 | A520 |
+| Bestway 80v | A711 | A715 |
+
+The current Daly Candidate is available to IoT OTA clients at:
+
+```text
+http://ssiot-ota-pilot.battery-monitor.workers.dev/firmware/4g-iot/daly/4g-iot_daly_A021.bin
+```
+
+It is 451088 bytes with SHA-256
+`E8B487F38C07C86D167EEDA9682997716D04887E552D61AC721048AC0770EEB8`.
+The deployment workflow requires a direct HTTP 200, no redirect,
+`application/octet-stream`, exact length, and matching hash. Publication does not
+install firmware on a device and does not promote it to Production.

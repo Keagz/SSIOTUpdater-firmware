@@ -1,7 +1,7 @@
 # AI_Context.md — SSIOTUpdater-firmware
 
 > Context for AI assistants working on this repo. Read this first.
-> Last updated: 2026-08-24.
+> Last updated: 2026-10-05.
 
 ## What this repo is
 
@@ -19,7 +19,9 @@ By **Device Type × Battery Type**:
 - Device Type: `4G IOT` (chip `esp32s3`, flash offset `0x10000`), `VoltMeter` (chip `esp32`, `0x10000`).
 - Battery Type: `Daly`, `Bestway`, `Bestway 80v`.
 
-Each Device+Battery combination maps to one active firmware binary.
+Each Device+Battery combination can map to one Production binary and one optional
+Candidate binary. Candidate selection is explicit and never changes the normal
+Production updater default.
 
 ## Files & data model
 
@@ -130,9 +132,25 @@ updater now consumes `candidate-manifest.json` only through its explicit Candida
 selection and isolated cache. This support is committed in `e92fae3` and released
 through the normal ClickOnce update channel as `1.0.0.57`.
 
-Current state: the Candidate manifest selects Daly A011. Production `manifest.json`
-still selects V010 (Daly), V516 (Bestway), and V709 (Bestway 80 V). A Candidate
-selection is test-only availability, not fleet approval or a Production promotion.
+Current state, 2026-10-05:
+
+| Family | Production | Candidate |
+| --- | --- | --- |
+| Daly | A017 | A021 |
+| Bestway 24/48 V | A518 | A520 |
+| Bestway 80 V | A711 | A715 |
+
+Daly A020 (`74d2c1a`) and A021 (`74ee3d0`) were published without changing the
+Production pointer. A021 is the selected corrective Candidate: 451088 bytes,
+SHA-256 `E8B487F38C07C86D167EEDA9682997716D04887E552D61AC721048AC0770EEB8`.
+The GitHub Action validated the complete catalog, deployed the isolated Cloudflare
+OTA host, and verified the direct plain-HTTP artifacts without redirects. The IoT
+OTA URL is
+`http://ssiot-ota-pilot.battery-monitor.workers.dev/firmware/4g-iot/daly/4g-iot_daly_A021.bin`.
+
+Candidate selection is test-only availability, not evidence of device installation,
+fleet approval, or a Production promotion. A021 has not been installed on the two
+investigated Daly devices as of this update.
 
 The public repository is appropriate for integrity-verified distribution, not as a
 confidentiality or authorisation boundary.
