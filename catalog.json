@@ -4,8 +4,17 @@
     "4G IOT": {
       "Daly": {
         "activeVersion": "A017",
-        "candidateVersion": "A020",
+        "candidateVersion": "A021",
         "versions": [
+          {
+            "version": "A021",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/daly/4g-iot_daly_A021.bin",
+            "sha256": "E8B487F38C07C86D167EEDA9682997716D04887E552D61AC721048AC0770EEB8",
+            "size": 451088,
+            "uploadedAt": "2026-10-05T18:13:35.628Z",
+            "notes": "Corrective candidate: immediate RS485 receive handover, Daly checksum validation, retained raw diagnostics, and start-to-start interval scheduling."
+          },
           {
             "version": "A020",
             "channel": "candidate",
