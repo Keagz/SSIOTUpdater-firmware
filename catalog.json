@@ -4,8 +4,17 @@
     "4G IOT": {
       "Daly": {
         "activeVersion": "A017",
-        "candidateVersion": "A018",
+        "candidateVersion": "A020",
         "versions": [
+          {
+            "version": "A020",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/daly/4g-iot_daly_A020.bin",
+            "sha256": "C87C02ECD2F5123436E388C97558A4083361F142085D807493EEF8D3B8AC5530",
+            "size": 451056,
+            "uploadedAt": "2026-10-05T13:46:56.118Z",
+            "notes": "Diagnostic candidate: bounded raw Daly UART capture on failed reads plus transport breadcrumbs for investigating missed transmissions."
+          },
           {
             "version": "A018",
             "channel": "candidate",
