@@ -2,14 +2,6 @@
   "schemaVersion": 2,
   "firmware": {
     "4G IOT": {
-      "Daly": {
-        "version": "A021",
-        "file": "firmware/4g-iot/daly/4g-iot_daly_A021.bin",
-        "sha256": "E8B487F38C07C86D167EEDA9682997716D04887E552D61AC721048AC0770EEB8",
-        "size": 451088,
-        "chip": "esp32s3",
-        "offset": "0x10000"
-      },
       "Bestway": {
         "version": "A521",
         "file": "firmware/4g-iot/bestway/4g-iot_bestway_A521.bin",
