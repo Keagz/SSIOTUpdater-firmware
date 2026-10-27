@@ -17,6 +17,14 @@
         "size": 511456,
         "chip": "esp32s3",
         "offset": "0x10000"
+      },
+      "Daly": {
+        "version": "A022",
+        "file": "firmware/4g-iot/daly/4g-iot_daly_A022.bin",
+        "sha256": "CD4561B6331AD5A3A92EDB9287ADFFC0403143351EC578A7C2F78C4D61AD438A",
+        "size": 451088,
+        "chip": "esp32s3",
+        "offset": "0x10000"
       }
     }
   }

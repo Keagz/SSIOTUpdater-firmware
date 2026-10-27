@@ -4,8 +4,17 @@
     "4G IOT": {
       "Daly": {
         "activeVersion": "A021",
-        "candidateVersion": "",
+        "candidateVersion": "A022",
         "versions": [
+          {
+            "version": "A022",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/daly/4g-iot_daly_A022.bin",
+            "sha256": "CD4561B6331AD5A3A92EDB9287ADFFC0403143351EC578A7C2F78C4D61AD438A",
+            "size": 451088,
+            "uploadedAt": "2026-10-27T12:46:24.168Z",
+            "notes": "Version-only copy of A021 for a fresh OTA attempt from A017 after OTA_HTTPMETA. Default interval 15 minutes; saved interval retained. No download-failure repair; no hardware validation. Candidate only."
+          },
           {
             "version": "A021",
             "channel": "production",
