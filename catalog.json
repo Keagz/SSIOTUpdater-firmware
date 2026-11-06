@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A521",
+        "candidateVersion": "A522",
         "versions": [
+          {
+            "version": "A522",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A522.bin",
+            "sha256": "8BF3B7CD0BED8C8FE950E93D00AE506A0338E9131E4DC6FD0BBDB36296EF80AC",
+            "size": 507008,
+            "uploadedAt": "2026-11-06T08:48:19.437Z",
+            "notes": "Bestway 24/48 V partial-measurement candidate based on A521. Preserves independently valid fields from one complete known-layout frame; unknown current direction leaves current blank. Reports missing fields, no bytes, incomplete frame or no supported packet match, plus rx/pm and st/sg/ra diagnostics. Requires the matching SSPortal partial-reading proxy/ingestion/UI update before installation (currently prepared locally). Compiled and synthetic parser/acquisition/ingestion tests pass; physical BMS/OTA/soak testing pending. Candidate only; 40% buzzer threshold and fail-safe retained."
+          },
           {
             "version": "A521",
             "channel": "candidate",
