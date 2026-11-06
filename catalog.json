@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A522",
+        "candidateVersion": "A523",
         "versions": [
+          {
+            "version": "A523",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A523.bin",
+            "sha256": "005E19377F360E1B6CB3A9B617DA52AEFD0B52678317464E31C145E57B29A23A",
+            "size": 507072,
+            "uploadedAt": "2026-11-06T11:18:08.243Z",
+            "notes": "Bestway 24/48 V Candidate based on A522. Owner-specified status 0104 is idle (0 A); technician-confirmed 0009 is charging (positive raw-current magnitude). Retains per-field validity, receive diagnostics, other status handling, signed OTA and the 40% buzzer rule. Matching live ingestion resolves these codes for installed A522 reports with provenance. Synthetic parser/acquisition and ingestion tests pass; complete field frames and independent physical/soak validation pending. Candidate only."
+          },
           {
             "version": "A522",
             "channel": "candidate",
