@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A524",
+        "candidateVersion": "A525",
         "versions": [
+          {
+            "version": "A525",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A525.bin",
+            "sha256": "3B7F9D8459204AB82E3F8BC9D7605CC87989B68CF5266C88EDACC090B6EED311",
+            "size": 508032,
+            "uploadedAt": "2026-11-09T10:56:26.070Z",
+            "notes": "Bestway 24/48 V Candidate based on A524 with the retained A523 parser. Owner-requested two-hour scheduled reboot. First A525 boot records the prior effective interval and resets persisted reporting to 2 minutes; later configuration changes survive reboot. Adds active/prior interval, migration, uptime, reset cause, previous portal result/failure/attempt and rb_min=120 breadcrumbs. Native parser/acquisition/migration/actual-post/actual-loop and portal fixtures pass; ESP32 build recorded. Legacy contract, BMS maps and signed OTA retained. No new modem watchdog/recovery policy; a blocked loop can delay scheduled reboot. Physical/OTA/soak validation pending. Candidate for operator staging only."
+          },
           {
             "version": "A524",
             "channel": "candidate",
