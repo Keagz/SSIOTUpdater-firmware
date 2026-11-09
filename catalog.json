@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A525",
+        "candidateVersion": "A526",
         "versions": [
+          {
+            "version": "A526",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A526.bin",
+            "sha256": "90631A285F73CDC43B6727FF92AFEACA65D0D274BFE7CF25A0E57373A8C79519",
+            "size": 509920,
+            "uploadedAt": "2026-11-09T14:52:53.563Z",
+            "notes": "Bestway A526 Candidate based on A525. REET0180-only 30-minute scheduled restart; other device IDs retain two hours. Checksummed atomic NVS failure/previous-boot records preserve last failure, HTTP operation, counters, pause state and explicit restart trigger across reboot/power loss after checkpoint. Repeated identical failures checkpoint at powers of two to limit flash writes; latest RAM evidence is saved before planned restarts. BMS parser/status maps, saved reporting interval, legacy request and signed OTA remain inherited. No new watchdog or modem recovery policy. Native persistence/actual-post/actual-loop/parser tests pass; ESP32 build recorded; physical pilot pending. Owner requested automatic staging for REET0180 only."
+          },
           {
             "version": "A525",
             "channel": "candidate",
