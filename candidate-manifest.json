@@ -3,10 +3,10 @@
   "firmware": {
     "4G IOT": {
       "Bestway": {
-        "version": "A523",
-        "file": "firmware/4g-iot/bestway/4g-iot_bestway_A523.bin",
-        "sha256": "005E19377F360E1B6CB3A9B617DA52AEFD0B52678317464E31C145E57B29A23A",
-        "size": 507072,
+        "version": "A524",
+        "file": "firmware/4g-iot/bestway/4g-iot_bestway_A524.bin",
+        "sha256": "E5CD9EA80F84671A80F16F44EA5E893B3A6BBBE122BFBDADA2D227DF00704418",
+        "size": 508016,
         "chip": "esp32s3",
         "offset": "0x10000"
       },
