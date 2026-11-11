@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A526",
+        "candidateVersion": "A528",
         "versions": [
+          {
+            "version": "A528",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A528.bin",
+            "sha256": "3BBF22857094D77B18FF886C79399819195F5C693C23BF8A7F5D328735D8281C",
+            "size": 508032,
+            "uploadedAt": "2026-11-11T07:07:58.964Z",
+            "notes": "Bestway 24/48 V candidate based on A525 for REET0180 evaluation. Treats BMS sign word 0x0009 as discharge and accepts reported current through ±700 A. SSPortal ingestion v11 accepts the same range. Native parser fixtures and ESP32-S3 image validation passed. Physical charge/discharge validation on REET0180 is pending."
+          },
           {
             "version": "A526",
             "channel": "candidate",
