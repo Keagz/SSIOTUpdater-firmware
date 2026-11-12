@@ -118,8 +118,17 @@
       },
       "Bestway": {
         "activeVersion": "A518",
-        "candidateVersion": "A528",
+        "candidateVersion": "A529",
         "versions": [
+          {
+            "version": "A529",
+            "channel": "candidate",
+            "file": "firmware/4g-iot/bestway/4g-iot_bestway_A529.bin",
+            "sha256": "B1162F8994909C6EC79D591735020107EF1CAD4DDBE4FD7C61BCD4BD0529E0EA",
+            "size": 508032,
+            "uploadedAt": "2026-11-12T13:15:29.632Z",
+            "notes": "Bestway 24/48 V Candidate based on A528. Restores the scheduled soft reboot to 24 hours (rb_min=1440). Keeps 0x0009 as discharge and current validation through ±700 A. Native restart and parser tests passed, and the ESP32-S3 application image was validated. Physical validation is pending."
+          },
           {
             "version": "A528",
             "channel": "candidate",
